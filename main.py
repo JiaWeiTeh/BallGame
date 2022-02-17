@@ -41,96 +41,97 @@ plot_barR, = ax.plot([], [], '-', lw = 10)
 
 class Ball:
     def __init__(self, position, velocity):
-        self.vel = np.array(velocity).astype(float)
-        self.pos = np.array(position).astype(float)
+        self.xvel, self.yvel = np.array(velocity).astype(float)
+        self.xpos, self.ypos = np.array(position).astype(float)
     
     def show_pos(self):
-        print("The ball is at x =", self.pos[0], "y =", self.pos[1])
+        print("The ball is at x =", self.xpos, "y =", self.ypos)
   
     def update(self, dt):
         # timestep update
-        self.pos += self.vel * dt
+        self.xpos += self.xvel * dt
+        self.ypos += self.yvel * dt
         
         # boundary problems
-        if self.pos[1] + 2 >= boardy or self.pos[1] - 2 <= 0:
-            self.vel[1] = -self.vel[1]
+        if self.ypos + 2 >= boardy or self.ypos - 2 <= 0:
+            self.yvel = -self.yvel
             
         # collisional area covered by the bar
         # techinically only need to care about the front side(?)
-        if (self.pos[0] >= barR.pos[0] - 3) or (self.pos[0] <= barL.pos[0] + 3):
+        if (self.xpos >= barR.xpos - 3) or (self.xpos <= barL.xpos + 3):
                 # check if position of ball is within height of bar
-                if (self.pos[1] <= barR.pos[1] + barR.len/2 and\
-                    self.pos[1] >= barR.pos[1] - barR.len/2) or\
-                    (self.pos[1] <= barL.pos[1] + barL.len/2 and\
-                    self.pos[1] >= barL.pos[1] - barL.len/2):
+                if (self.ypos <= barR.ypos + barR.len/2 and\
+                    self.ypos >= barR.ypos - barR.len/2) or\
+                    (self.ypos <= barL.ypos + barL.len/2 and\
+                    self.ypos >= barL.ypos - barL.len/2):
                     # this will fix zigzag problem
-                    if (self.pos[0] > boardx/2 and self.vel[0] > 0) or\
-                        (self.pos[0] < boardx/2 and self.vel[0] < 0):
-                        self.vel[0] = -self.vel[0]
+                    if (self.xpos > boardx/2 and self.xvel > 0) or\
+                        (self.xpos < boardx/2 and self.xvel < 0):
+                        self.xvel = -self.xvel
 
 class BarLeft:
     def __init__(self, position, length):
-        self.pos = np.array(position).astype(float) # - length to shorten (?)
+        self.xpos, self.ypos = np.array(position).astype(float) # - length to shorten (?)
         self.len = length
         self.plt = np.array([[position[0], position[0]],\
                              [position[1]-length/2, position[1]+length/2]])
         
     def update(self, dt):
         # If bar hits top/bottom after updating, don't update
-        if self.pos[1] + (dt*barvel) + self.len/2 >= boardy\
-            or self.pos[1] - (dt*barvel) - self.len/2 <= 0:
-                if (ball.pos[1] > (boardy - self.len) and\
-                    self.pos[1] > (boardy - self.len)) or\
-                    (ball.pos[1] < self.len and self.pos[1] < self.len):
+        if self.ypos + (dt*barvel) + self.len/2 >= boardy\
+            or self.ypos - (dt*barvel) - self.len/2 <= 0:
+                if (ball.ypos > (boardy - self.len) and\
+                    self.ypos > (boardy - self.len)) or\
+                    (ball.ypos < self.len and self.ypos < self.len):
                         return
         # Otherwise, update position based on y-coord of ball.
         # Only update when ball is within half of boardlength.
-        if ball.pos[0] > boardx/2:
+        if ball.xpos > boardx/2:
             return
         # Do not update if ball is post-collision
-        if ball.vel[0] > 0:
+        if ball.xvel > 0:
             return 
         
         # Now, make the bar chase the ball
         # Find difference in position
-        pos_diff = ball.pos[1] - self.pos[1]
+        pos_diff = ball.ypos - self.ypos
         if pos_diff > 0: #and abs(pos_diff) < self.len/2:
             if pos_diff <= dt * (barvel):
                 pass
             else:
-                self.pos[1] += barvel * dt
+                self.ypos += barvel * dt
         elif pos_diff < 0: # and abs(pos_diff) < self.len/2:
             if abs(pos_diff) <= dt * (barvel):
                 pass
             else:
-                self.pos[1] -= barvel * dt
+                self.ypos -= barvel * dt
         # elif ball.
         # Update plot based on position
-        self.plt = np.array([[self.pos[0], self.pos[0]],\
-                             [self.pos[1]-self.len/2,\
-                              self.pos[1]+self.len/2]])
+        self.plt = np.array([[self.xpos, self.xpos],\
+                             [self.ypos-self.len/2,\
+                              self.ypos+self.len/2]])
     
 class BarRight:
     def __init__(self, position, length):
-        self.pos = np.array(position).astype(float) # - length to shorten (?)
+        self.xpos, self.ypos = np.array(position).astype(float) # - length to shorten (?)
         self.len = length
         self.plt = np.array([[position[0], position[0]],\
                              [position[1]-length/2, position[1]+length/2]])
         
     def update(self, dt):
         # If bar hits top/bottom after updating, don't update
-        if self.pos[1] + (dt*barvel) + self.len/2 >= boardy\
-            or self.pos[1] - (dt*barvel) - self.len/2 <= 0:
-                if (ball.pos[1] > (boardy - self.len) and\
-                    self.pos[1] > (boardy - self.len)) or\
-                    (ball.pos[1] < self.len and self.pos[1] < self.len):
+        if self.ypos + (dt*barvel) + self.len/2 >= boardy\
+            or self.ypos - (dt*barvel) - self.len/2 <= 0:
+                if (ball.ypos > (boardy - self.len) and\
+                    self.ypos > (boardy - self.len)) or\
+                    (ball.ypos < self.len and self.ypos < self.len):
                         return
         # Otherwise, update position based on y-coord of ball.
         # Only update when ball is within half of boardlength.
-        if ball.pos[0] < boardx/2:
+        if ball.xpos < boardx/2:
             return
         # Do not update if ball is post-collision
-        if ball.vel[0] < 0:
+        if ball.xvel < 0:
             return 
         
         # Make bars shrink every 2 turns
@@ -138,22 +139,22 @@ class BarRight:
             # self.len -= 1
         # Now, make the bar chase the ball
         # Find difference in position
-        pos_diff = ball.pos[1] - self.pos[1]
+        pos_diff = ball.ypos - self.ypos
         if pos_diff > 0: #and abs(pos_diff) < self.len/2:
             if pos_diff <= dt * (barvel):
                 pass
             else:
-                self.pos[1] += barvel * dt
+                self.ypos += barvel * dt
         elif pos_diff < 0: # and abs(pos_diff) < self.len/2:
             if abs(pos_diff) <= dt * (barvel):
                 pass
             else:
-                self.pos[1] -= barvel * dt
+                self.ypos -= barvel * dt
         # elif ball.
         # Update plot based on position
-        self.plt = np.array([[self.pos[0], self.pos[0]],\
-                             [self.pos[1]-self.len/2,\
-                              self.pos[1]+self.len/2]])
+        self.plt = np.array([[self.xpos, self.xpos],\
+                             [self.ypos-self.len/2,\
+                              self.ypos+self.len/2]])
 
 # =============================================================================
 # Initial condition
@@ -168,7 +169,7 @@ def init():
                 [ballvel*np.cos(random_angle), ballvel*np.sin(random_angle)])
     barR = BarRight([boardx-5, boardy/2], barlength)
     barL = BarLeft([5, boardy/2], barlength)
-    plot_ball.set_data(ball.pos)
+    plot_ball.set_data(ball.xpos, ball.ypos)
     plot_barL.set_data(barL.plt)
     plot_barR.set_data(barR.plt)
     plot_dash.set_data([boardx/2, boardx/2],[0, boardy])
@@ -184,17 +185,18 @@ def animate(i):
     if i > waittime: 
         # slowly ramp up ball velocity
         # if i%50 == 0:
-            # ball.vel *= 1.5
+            # ball.xvel *= 1.5
+            # ball.yvel *= 1.5
         # reset board if bars fail to catch ball
-        if ball.pos[0] > barR.pos[0] or ball.pos[0] < barL.pos[0]:
-            if (ball.pos[0] > boardx and (ball.pos[1] > barR.pos[1] or ball.pos[1] < barR.pos[1])) or\
-                (ball.pos[0] < 0 and (ball.pos[1] > barL.pos[1] or ball.pos[1] < barL.pos[1])):
+        if ball.xpos > barR.xpos or ball.xpos < barL.xpos:
+            if (ball.xpos > boardx and (ball.ypos > barR.ypos or ball.ypos < barR.ypos)) or\
+                (ball.xpos < 0 and (ball.ypos > barL.ypos or ball.ypos < barL.ypos)):
                 anim.frame_seq = anim.new_frame_seq() 
                 init()
         ball.update(dt)
         barR.update(dt)
         barL.update(dt)
-        plot_ball.set_data(ball.pos)
+        plot_ball.set_data(ball.xpos, ball.ypos)
         plot_barL.set_data(barL.plt[0], barL.plt[1])
         plot_barR.set_data(barR.plt[0], barR.plt[1])
     return plot_ball, plot_barR, plot_barL, plot_dash,
@@ -210,8 +212,8 @@ anim = animation.FuncAnimation(fig, animate, init_func=init,
 # =============================================================================
 # Save movie
 # =============================================================================
-path2save = r"/Users/jwt/Documents/Code/Ball_Game/"
-anim.save(path2save+'ball_game_stage6.mp4', fps=30,
-          extra_args=['-vcodec', 'libx264'])
+# path2save = r"/Users/jwt/Documents/Code/Ball_Game/"
+# anim.save(path2save+'ball_game_stage6.mp4', fps=30,
+#           extra_args=['-vcodec', 'libx264'])
 
 plt.show()
