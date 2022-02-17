@@ -179,6 +179,9 @@ def animate(i):
         # slowly ramp up ball velocity
         # if i%50 == 0:
             # ball.vel *= 1.5
+        # Make bars shrink as time goes by
+        if i%50 == 0: #extreme
+            barR.len -= 1
         ball.update(dt)
         barR.update(dt)
         barL.update(dt)
@@ -200,9 +203,6 @@ anim = animation.FuncAnimation(fig, animate, init_func=init,
                                 repeat = True
                                )
 
-"""
-Problem: ball will be trapped between bar and 0/boardx. 
-"""
 # =============================================================================
 # Save
 # =============================================================================
