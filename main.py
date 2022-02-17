@@ -14,7 +14,7 @@ import matplotlib.animation as animation
 boardy = 100
 boardx = 200
 # length of the bar
-barlength = 20 
+barlength = 20
 # bar velocity
 barvel = .4   #units/dt
 # ball velocity
@@ -26,13 +26,15 @@ waittime = 50
 # total frame
 frames = 800
 
+# set theme
 plt.style.use('dark_background')
 
+# draw canvas
 fig = plt.figure(figsize = (12,7), dpi = 100)
 ax = plt.axes(xlim=(0, boardx), ylim=(0, boardy))
 ax.xaxis.set_ticks([])
 ax.yaxis.set_ticks([])
-
+# draw objects
 plot_dash, = ax.plot([], [], '--', c = 'w', lw = 1)
 # customize ball and bars' colour here by changing the keyword mfc
 plot_ball, = ax.plot([], [], 'o', mec = 'k', mfc = 'w', ms = 10)
@@ -40,15 +42,24 @@ plot_barL, = ax.plot([], [], '-', lw = 10)
 plot_barR, = ax.plot([], [], '-', lw = 10)
 
 class Ball:
+    """
+    A class to represent a Ball.
+    """
     def __init__(self, position, velocity):
+        """
+        Constructs all necessary attributes for the Ball object
+
+        Parameters
+        ----------
+        position : list(float)
+            [x, y] position of the ball.
+        velocity : list(float)
+            [x, y] velocity of the ball.
+        """
         self.xvel, self.yvel = np.array(velocity).astype(float)
         self.xpos, self.ypos = np.array(position).astype(float)
     
-    def show_pos(self):
-        print("The ball is at x =", self.xpos, "y =", self.ypos)
-  
-    def update(self, dt):
-        # timestep update
+    def update(self, dt): # timestep update
         self.xpos += self.xvel * dt
         self.ypos += self.yvel * dt
         
@@ -70,13 +81,26 @@ class Ball:
                         self.xvel = -self.xvel
 
 class BarLeft:
+    """
+    A class to represent the left Bar.
+    """
     def __init__(self, position, length):
+        """
+        Constructs all necesarry attributes for the left Bar object.
+
+        Parameters
+        ----------
+        position : list(float)
+            [x, y] position of the bar.
+        length : float
+            length of the bar.
+        """
         self.xpos, self.ypos = np.array(position).astype(float)
         self.len = length
-        self.plt = np.array([[self.xpos, self.ypos],\
+        self.plt = np.array([[self.xpos, self.xpos],\
                              [self.ypos-self.len/2, self.ypos+self.len/2]])
         
-    def update(self, dt):
+    def update(self, dt): # timestep update
         # If bar hits top/bottom after updating, don't update
         if self.ypos + (dt*barvel) + self.len/2 >= boardy\
             or self.ypos - (dt*barvel) - self.len/2 <= 0:
@@ -112,13 +136,26 @@ class BarLeft:
                               self.ypos+self.len/2]])
     
 class BarRight:
+    """
+    A class to represent the right Bar.
+    """
     def __init__(self, position, length):
+        """
+        Constructs all necesarry attributes for the right Bar object.
+
+        Parameters
+        ----------
+        position : list(float)
+            [x, y] position of the bar.
+        length : float
+            length of the bar.
+        """
         self.xpos, self.ypos = np.array(position).astype(float)
         self.len = length
-        self.plt = np.array([[self.xpos, self.ypos],\
+        self.plt = np.array([[self.xpos, self.xpos],\
                              [self.ypos-self.len/2, self.ypos+self.len/2]])
         
-    def update(self, dt):
+    def update(self, dt): # timestep update
         # If bar hits top/bottom after updating, don't update
         if self.ypos + (dt*barvel) + self.len/2 >= boardy\
             or self.ypos - (dt*barvel) - self.len/2 <= 0:
@@ -169,6 +206,8 @@ def init():
                 [ballvel*np.cos(random_angle), ballvel*np.sin(random_angle)])
     barR = BarRight([boardx-5, boardy/2], barlength)
     barL = BarLeft([5, boardy/2], barlength)
+    
+    # Plot
     plot_ball.set_data(ball.xpos, ball.ypos)
     plot_barL.set_data(barL.plt)
     plot_barR.set_data(barR.plt)
@@ -179,7 +218,6 @@ def init():
 # Animation
 # =============================================================================
 
-# animation 
 def animate(i):
     # let ball stay in the middle for a bit
     if i > waittime: 
@@ -200,7 +238,6 @@ def animate(i):
         plot_barL.set_data(barL.plt[0], barL.plt[1])
         plot_barR.set_data(barR.plt[0], barR.plt[1])
     return plot_ball, plot_barR, plot_barL, plot_dash,
-        
 
 anim = animation.FuncAnimation(fig, animate, init_func=init,
                                frames=frames, #change length of the animation
