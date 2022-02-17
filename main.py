@@ -51,9 +51,9 @@ class Ball:
 
         Parameters
         ----------
-        position : list(float)
+        xpos, ypos : float
             [x, y] position of the ball.
-        velocity : list(float)
+        xvel, yvel : float
             [x, y] velocity of the ball.
         """
         self.xvel, self.yvel = np.array(velocity).astype(float)
@@ -90,7 +90,7 @@ class BarLeft:
 
         Parameters
         ----------
-        position : list(float)
+        xpos, ypos : float
             [x, y] position of the bar.
         length : float
             length of the bar.
@@ -145,7 +145,7 @@ class BarRight:
 
         Parameters
         ----------
-        position : list(float)
+        xpos, ypos : float
             [x, y] position of the bar.
         length : float
             length of the bar.
