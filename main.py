@@ -71,10 +71,10 @@ class Ball:
 
 class BarLeft:
     def __init__(self, position, length):
-        self.xpos, self.ypos = np.array(position).astype(float) # - length to shorten (?)
+        self.xpos, self.ypos = np.array(position).astype(float)
         self.len = length
-        self.plt = np.array([[position[0], position[0]],\
-                             [position[1]-length/2, position[1]+length/2]])
+        self.plt = np.array([[self.xpos, self.ypos],\
+                             [self.ypos-self.len/2, self.ypos+self.len/2]])
         
     def update(self, dt):
         # If bar hits top/bottom after updating, don't update
@@ -113,10 +113,10 @@ class BarLeft:
     
 class BarRight:
     def __init__(self, position, length):
-        self.xpos, self.ypos = np.array(position).astype(float) # - length to shorten (?)
+        self.xpos, self.ypos = np.array(position).astype(float)
         self.len = length
-        self.plt = np.array([[position[0], position[0]],\
-                             [position[1]-length/2, position[1]+length/2]])
+        self.plt = np.array([[self.xpos, self.ypos],\
+                             [self.ypos-self.len/2, self.ypos+self.len/2]])
         
     def update(self, dt):
         # If bar hits top/bottom after updating, don't update
