@@ -16,7 +16,7 @@ boardx = 200
 # length of the bar
 barlength = 30
 # bar velocity
-barvel = .7   #units/dt
+barvel = .5   #units/dt
 # ball velocity
 ballvel = 1.2   #units/dt
 # timestep of the game
@@ -101,17 +101,15 @@ class BarLeft:
                              [self.ypos-self.len/2, self.ypos+self.len/2]])
         
     def update(self, dt): # timestep update
-        # shorten bar length
-        self.plt = np.array([[self.xpos, self.xpos],\
-                         [self.ypos-self.len/2,\
-                          self.ypos+self.len/2]])
+        # update bar length regardless of result
+        self.plt[1] = [self.ypos-self.len/2, self.ypos+self.len/2]
         # If bar hits top/bottom after updating, don't update
         if self.ypos + (dt*barvel) + self.len/2 >= boardy\
             or self.ypos - (dt*barvel) - self.len/2 <= 0:
-                if (ball.ypos > (boardy - self.len) and\
-                    self.ypos > (boardy - self.len)) or\
-                    (ball.ypos < self.len and self.ypos < self.len):
-                        return
+            if (ball.ypos > (boardy - self.len) and\
+                self.ypos > (boardy - self.len)) or\
+                (ball.ypos < self.len and self.ypos < self.len):
+                    return
         # Otherwise, update position based on y-coord of ball.
         # Only update when ball is within half of boardlength.
         if ball.xpos > boardx/2:
@@ -123,22 +121,19 @@ class BarLeft:
         # Now, make the bar chase the ball
         # Find difference in position
         pos_diff = ball.ypos - self.ypos
-        if pos_diff > 0: #and abs(pos_diff) < self.len/2:
+        if pos_diff > 0: 
             # this will fix 'vibrating' bar.
             if pos_diff <= dt * (barvel):
                 pass
             else:
                 self.ypos += barvel * dt
-        elif pos_diff < 0: # and abs(pos_diff) < self.len/2:
+        elif pos_diff < 0:
             if abs(pos_diff) <= dt * (barvel):
                 pass
             else:
                 self.ypos -= barvel * dt
-        # elif ball.
-        # Update plot based on position
-        self.plt = np.array([[self.xpos, self.xpos],\
-                             [self.ypos-self.len/2,\
-                              self.ypos+self.len/2]])
+        # update y position
+        self.plt[1] = [self.ypos-self.len/2, self.ypos+self.len/2]
     
 class BarRight:
     """
@@ -161,17 +156,15 @@ class BarRight:
                              [self.ypos-self.len/2, self.ypos+self.len/2]])
         
     def update(self, dt): # timestep update
-        # shorten bar length
-        self.plt = np.array([[self.xpos, self.xpos],\
-                         [self.ypos-self.len/2,\
-                          self.ypos+self.len/2]])
+        # update bar length regardless of result
+        self.plt[1] = [self.ypos-self.len/2, self.ypos+self.len/2]
         # If bar hits top/bottom after updating, don't update
         if self.ypos + (dt*barvel) + self.len/2 >= boardy\
             or self.ypos - (dt*barvel) - self.len/2 <= 0:
-                if (ball.ypos > (boardy - self.len) and\
-                    self.ypos > (boardy - self.len)) or\
-                    (ball.ypos < self.len and self.ypos < self.len):
-                        return
+            if (ball.ypos > (boardy - self.len) and\
+                self.ypos > (boardy - self.len)) or\
+                (ball.ypos < self.len and self.ypos < self.len):
+                    return
         # Otherwise, update position based on y-coord of ball.
         # Only update when ball is within half of boardlength.
         if ball.xpos < boardx/2:
@@ -180,28 +173,22 @@ class BarRight:
         if ball.xvel < 0:
             return 
         
-        # Make bars shrink every 2 turns
-        # if dt%50 == 0: #extreme
-            # self.len -= 1
         # Now, make the bar chase the ball
         # Find difference in position
         pos_diff = ball.ypos - self.ypos
-        if pos_diff > 0: #and abs(pos_diff) < self.len/2:
+        if pos_diff > 0:
             # this will fix 'vibrating' bar.
             if pos_diff <= dt * (barvel):
                 pass
             else:
                 self.ypos += barvel * dt
-        elif pos_diff < 0: # and abs(pos_diff) < self.len/2:
+        elif pos_diff < 0: 
             if abs(pos_diff) <= dt * (barvel):
                 pass
             else:
                 self.ypos -= barvel * dt
-        # elif ball.
-        # Update plot based on position
-        self.plt = np.array([[self.xpos, self.xpos],\
-                             [self.ypos-self.len/2,\
-                              self.ypos+self.len/2]])
+        # update y position
+        self.plt[1] = [self.ypos-self.len/2, self.ypos+self.len/2]
 
 # =============================================================================
 # Initial condition
