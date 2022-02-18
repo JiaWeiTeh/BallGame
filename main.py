@@ -64,6 +64,8 @@ class Ball:
         self.ypos += self.yvel * dt
         
         # boundary problems
+        # the constants appearing below are to account for "radius" of ball
+        # to make the contact more realistic.
         if self.ypos + 1.5 >= boardy or self.ypos - 1.5 <= 0:
             self.yvel = -self.yvel
             
@@ -94,6 +96,8 @@ class BarLeft:
             [x, y] position of the bar.
         length : float
             length of the bar.
+        plt : array(float)
+            the coordinates of the bar for plotting purposes
         """
         self.xpos, self.ypos = np.array(position).astype(float)
         self.len = length
@@ -149,6 +153,8 @@ class BarRight:
             [x, y] position of the bar.
         length : float
             length of the bar.
+        plt : array(float)
+            the coordinates of the bar for plotting purposes
         """
         self.xpos, self.ypos = np.array(position).astype(float)
         self.len = length
