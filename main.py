@@ -14,9 +14,9 @@ import matplotlib.animation as animation
 boardy = 100
 boardx = 200
 # length of the bar
-barlength = 20
+barlength = 30
 # bar velocity
-barvel = .4   #units/dt
+barvel = .7   #units/dt
 # ball velocity
 ballvel = 1.2   #units/dt
 # timestep of the game
@@ -24,7 +24,7 @@ dt = 1.5  #keep this constant, unless wanting to do slo/fast-mo
 # pause time before starting the game
 waittime = 50
 # total frame
-frames = 800
+frames = 2000
 
 # set theme
 plt.style.use('dark_background')
@@ -64,7 +64,7 @@ class Ball:
         self.ypos += self.yvel * dt
         
         # boundary problems
-        if self.ypos + 2 >= boardy or self.ypos - 2 <= 0:
+        if self.ypos + 1.5 >= boardy or self.ypos - 1.5 <= 0:
             self.yvel = -self.yvel
             
         # collisional area covered by the bar
@@ -101,6 +101,10 @@ class BarLeft:
                              [self.ypos-self.len/2, self.ypos+self.len/2]])
         
     def update(self, dt): # timestep update
+        # shorten bar length
+        self.plt = np.array([[self.xpos, self.xpos],\
+                         [self.ypos-self.len/2,\
+                          self.ypos+self.len/2]])
         # If bar hits top/bottom after updating, don't update
         if self.ypos + (dt*barvel) + self.len/2 >= boardy\
             or self.ypos - (dt*barvel) - self.len/2 <= 0:
@@ -157,6 +161,10 @@ class BarRight:
                              [self.ypos-self.len/2, self.ypos+self.len/2]])
         
     def update(self, dt): # timestep update
+        # shorten bar length
+        self.plt = np.array([[self.xpos, self.xpos],\
+                         [self.ypos-self.len/2,\
+                          self.ypos+self.len/2]])
         # If bar hits top/bottom after updating, don't update
         if self.ypos + (dt*barvel) + self.len/2 >= boardy\
             or self.ypos - (dt*barvel) - self.len/2 <= 0:
@@ -224,9 +232,10 @@ def animate(i):
     # let ball stay in the middle for a bit
     if i > waittime: 
         # slowly ramp up ball velocity (TBD)
-        # if i%50 == 0:
-            # ball.xvel *= 1.5
-            # ball.yvel *= 1.5
+        # shorten bar length
+        if i%5 == 0:
+            barR.len -= .05
+            barL.len -= .05
         # reset board if bars fail to catch ball
         # check if ball is beyond bar
         if ball.xpos > barR.xpos or ball.xpos < barL.xpos:
@@ -236,8 +245,8 @@ def animate(i):
         barL.update(dt)
         ball.update(dt)
         plot_ball.set_data(ball.xpos, ball.ypos)
-        plot_barL.set_data(barL.plt[0], barL.plt[1])
-        plot_barR.set_data(barR.plt[0], barR.plt[1])
+        plot_barL.set_data(barL.plt)
+        plot_barR.set_data(barR.plt)
     return plot_ball, plot_barR, plot_barL, plot_dash,
 
 anim = animation.FuncAnimation(fig, animate, init_func=init,
