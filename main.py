@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.animation as animation
 
-# Run this the first time
+# Uncomment this the first time if in Spyder
 # %matplotlib qt
 
 # =============================================================================
@@ -36,10 +36,10 @@ ax.xaxis.set_ticks([])
 ax.yaxis.set_ticks([])
 # draw objects
 plot_dash, = ax.plot([], [], '--', c = 'w', lw = 1)
-# customize ball and bars' colour here by changing the keyword mfc
+# customise colours of ball and bars here by changing the keyword mfc
 plot_ball, = ax.plot([], [], 'o', mec = 'k', mfc = 'w', ms = 10)
-plot_barL, = ax.plot([], [], '-', lw = 10)
-plot_barR, = ax.plot([], [], '-', lw = 10)
+plot_barL, = ax.plot([], [], '-', lw = 9)
+plot_barR, = ax.plot([], [], '-', lw = 9)
 
 class Ball:
     """
@@ -120,6 +120,7 @@ class BarLeft:
         # Find difference in position
         pos_diff = ball.ypos - self.ypos
         if pos_diff > 0: #and abs(pos_diff) < self.len/2:
+            # this will fix 'vibrating' bar.
             if pos_diff <= dt * (barvel):
                 pass
             else:
@@ -178,6 +179,7 @@ class BarRight:
         # Find difference in position
         pos_diff = ball.ypos - self.ypos
         if pos_diff > 0: #and abs(pos_diff) < self.len/2:
+            # this will fix 'vibrating' bar.
             if pos_diff <= dt * (barvel):
                 pass
             else:
@@ -221,19 +223,18 @@ def init():
 def animate(i):
     # let ball stay in the middle for a bit
     if i > waittime: 
-        # slowly ramp up ball velocity
+        # slowly ramp up ball velocity (TBD)
         # if i%50 == 0:
             # ball.xvel *= 1.5
             # ball.yvel *= 1.5
         # reset board if bars fail to catch ball
+        # check if ball is beyond bar
         if ball.xpos > barR.xpos or ball.xpos < barL.xpos:
-            if (ball.xpos > boardx and (ball.ypos > barR.ypos or ball.ypos < barR.ypos)) or\
-                (ball.xpos < 0 and (ball.ypos > barL.ypos or ball.ypos < barL.ypos)):
-                anim.frame_seq = anim.new_frame_seq() 
-                init()
-        ball.update(dt)
+            anim.frame_seq = anim.new_frame_seq() 
+            init()
         barR.update(dt)
         barL.update(dt)
+        ball.update(dt)
         plot_ball.set_data(ball.xpos, ball.ypos)
         plot_barL.set_data(barL.plt[0], barL.plt[1])
         plot_barR.set_data(barR.plt[0], barR.plt[1])
