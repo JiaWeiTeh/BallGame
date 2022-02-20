@@ -6,6 +6,8 @@ import matplotlib.animation as animation
 
 # Uncomment this the first time if in Spyder
 # %matplotlib qt
+# Uncomment this the first time if in jupyter notebook
+# %matplotlib notebook
 
 # =============================================================================
 # Setup (Actually don't change these because 80% of the time game will break)
@@ -25,6 +27,8 @@ dt = 1.5  #keep this constant, unless wanting to do slo/fast-mo
 waittime = 50
 # total frame
 frames = 2000
+# status
+status = "Init"
 
 # set theme
 plt.style.use('dark_background')
@@ -40,6 +44,13 @@ plot_dash, = ax.plot([], [], '--', c = 'w', lw = 1)
 plot_ball, = ax.plot([], [], 'o', mec = 'k', mfc = 'w', ms = 10)
 plot_barL, = ax.plot([], [], '-', lw = 9)
 plot_barR, = ax.plot([], [], '-', lw = 9)
+plot_textL = ax.text(boardx/4, boardy/2, "", size = 30, fontfamily = "Chalkduster")
+plot_textR = ax.text(3*boardx/4, boardy/2, "", size = 30, fontfamily = "Chalkduster")
+textR = iter(np.linspace(0, 10, 12, dtype = int).astype(str))
+textL = iter(np.linspace(0, 10, 12, dtype = int).astype(str))
+ax.text(boardx/5, 3*boardy/5, "Score", size = 30, fontfamily = "Chalkduster")
+ax.text(3*boardx/4.3, 3*boardy/5, "Score", size = 30, fontfamily = "Chalkduster")
+
 
 class Ball:
     """
@@ -127,14 +138,10 @@ class BarLeft:
         pos_diff = ball.ypos - self.ypos
         if pos_diff > 0: 
             # this will fix 'vibrating' bar.
-            if pos_diff <= dt * (barvel):
-                pass
-            else:
+            if pos_diff > dt * (barvel):
                 self.ypos += barvel * dt
         elif pos_diff < 0:
-            if abs(pos_diff) <= dt * (barvel):
-                pass
-            else:
+            if abs(pos_diff) > dt * (barvel):
                 self.ypos -= barvel * dt
         # update y position
         self.plt[1] = [self.ypos-self.len/2, self.ypos+self.len/2]
@@ -184,14 +191,10 @@ class BarRight:
         pos_diff = ball.ypos - self.ypos
         if pos_diff > 0:
             # this will fix 'vibrating' bar.
-            if pos_diff <= dt * (barvel):
-                pass
-            else:
+            if pos_diff > dt * (barvel):
                 self.ypos += barvel * dt
         elif pos_diff < 0: 
-            if abs(pos_diff) <= dt * (barvel):
-                pass
-            else:
+            if abs(pos_diff) > dt * (barvel):
                 self.ypos -= barvel * dt
         # update y position
         self.plt[1] = [self.ypos-self.len/2, self.ypos+self.len/2]
@@ -201,7 +204,7 @@ class BarRight:
 # =============================================================================
     
 def init():
-    global random_angle, ball, barR, barL
+    global random_angle, ball, barR, barL, status
     # random initial angle
     random_angle = np.deg2rad(np.random.choice([np.random.uniform(320, 400),\
                                      np.random.uniform(140, 220)]))
@@ -214,14 +217,22 @@ def init():
     plot_ball.set_data(ball.xpos, ball.ypos)
     plot_barL.set_data(barL.plt)
     plot_barR.set_data(barR.plt)
+    if status == "Left wins":
+        plot_textL.set_text(next(textL))
+    elif status == "Right wins":
+        plot_textR.set_text(next(textR))
+    elif status == "Init":
+        plot_textL.set_text(next(textL))
+        plot_textR.set_text(next(textR))
     plot_dash.set_data([boardx/2, boardx/2],[0, boardy])
-    return plot_ball, plot_barR, plot_barL, plot_dash,
+    return plot_ball, plot_barR, plot_barL, plot_dash, plot_textL, plot_textR
 
 # =============================================================================
 # Animation
 # =============================================================================
 
 def animate(i):
+    global status
     # let ball stay in the middle for a bit
     if i > waittime: 
         # slowly ramp up ball velocity (TBD)
@@ -232,6 +243,12 @@ def animate(i):
         # reset board if bars fail to catch ball
         # check if ball is beyond bar
         if ball.xpos > barR.xpos or ball.xpos < barL.xpos:
+            if ball.xpos >= barR.xpos:
+                status = "Left wins"
+            elif ball.xpos <= barL.xpos:
+                status = "Right wins"
+            else:
+                status = "Init"
             anim.frame_seq = anim.new_frame_seq() 
             init()
         barR.update(dt)
@@ -240,7 +257,7 @@ def animate(i):
         plot_ball.set_data(ball.xpos, ball.ypos)
         plot_barL.set_data(barL.plt)
         plot_barR.set_data(barR.plt)
-    return plot_ball, plot_barR, plot_barL, plot_dash,
+    return plot_ball, plot_barR, plot_barL, plot_dash, plot_textL, plot_textR
 
 anim = animation.FuncAnimation(fig, animate, init_func=init,
                                frames=frames, #change length of the animation
@@ -253,7 +270,18 @@ anim = animation.FuncAnimation(fig, animate, init_func=init,
 # Save movie
 # =============================================================================
 # path2save = r"/Users/jwt/Documents/Code/Ball_Game/"
-# anim.save(path2save+'ball_game_stage6.mp4', fps=30,
+# anim.save(path2save+'stage7.mp4', fps=30,
 #           extra_args=['-vcodec', 'libx264'])
 
-plt.show()
+if __name__ == '__main__':
+    animation.FuncAnimation(fig, animate, init_func=init,
+                               frames=frames, #change length of the animation
+                               interval=.1, # change to slow/fast motion
+                                blit=True,
+                                repeat = True
+                               )
+    # plt.show()
+    
+    
+    
+    
