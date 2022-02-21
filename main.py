@@ -137,7 +137,7 @@ class BarLeft:
         # Find difference in position
         pos_diff = ball.ypos - self.ypos
         if pos_diff > 0: 
-            # this will fix 'vibrating' bar.
+            # this will fix 'oscillating' bar.
             if pos_diff > dt * (barvel):
                 self.ypos += barvel * dt
         elif pos_diff < 0:
@@ -190,7 +190,7 @@ class BarRight:
         # Find difference in position
         pos_diff = ball.ypos - self.ypos
         if pos_diff > 0:
-            # this will fix 'vibrating' bar.
+            # this will fix 'oscillating' bar.
             if pos_diff > dt * (barvel):
                 self.ypos += barvel * dt
         elif pos_diff < 0: 
